@@ -9,6 +9,7 @@ By default also normalizes audio to -16LUFS, so you don't get jumpscared while d
 ### Requirements
 
 - Anki (duh) + [AnkiConnect addon](https://ankiweb.net/shared/info/2055492159) (2055492159)
+- pipewire
 - libnotify (notify-send)
 - curl
 - jq
