@@ -19,6 +19,7 @@ appname="ankiaudio"
 norm_integrated="-16"
 norm_truepeak="-1.5"
 norm_lra="11"
+output_format="rec_%Y%m%d_%H%M%S.mp3"
 
 # vars
 playback_audio=0
@@ -27,6 +28,19 @@ media_name=""
 
 ankiconnect() {
     curl $ankiconnect_url -X POST -H "Content-Type: application/json; charset=UTF-8" -d "$1" 2>/dev/null
+}
+
+_close_notif() {
+    dbus-send                                           \
+        --session                                       \
+        --type=method_call                              \
+        --dest=org.freedesktop.Notifications            \
+        /org/freedesktop/Notifications                  \
+        org.freedesktop.Notifications.CloseNotification \
+        uint32:$1
+
+    # sleep to ensure the notification has been closed before we attempt to make any new ones
+    sleep 0.1
 }
 
 _play_audio() {
@@ -112,7 +126,7 @@ if pgrep pw-record >/dev/null; then
 
     rm $rec_file
 
-    media_name="$(date +"rec_%Y%m%d_%H%M%S.mp3")"
+    media_name="$(date +"$output_format")"
 
     if [ $use_clipboard -eq 1 ]; then
         _copy_mp3 0
@@ -164,6 +178,8 @@ elif [ "$(pgrep -of "$0")" != "$$" ]; then
     echo "Recording countdown in progress..."
     exit 1
 else
+    _close_notif $replaceid
+
     if [ $wait_sec -gt 0 ]; then
         msg="Recording in $wait_sec seconds..."
 
