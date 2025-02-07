@@ -48,7 +48,7 @@ _copy_mp3() {
     fi
 }
 
-while getopts pc o; do
+while getopts pcn o; do
     case $o in
         p):
             playback_audio=1
@@ -56,11 +56,16 @@ while getopts pc o; do
         c):
             use_clipboard=1
             ;;
+        n):
+            wait_sec=0
+            ;;
     esac
 done
 
-if pgrep pw-record; then
+if pgrep pw-record >/dev/null; then
     pkill pw-record
+    # kills the old process' notify-send so it closes the notification and stops the process
+    pkill --signal SIGINT -f "notify-send.+$replaceid"
 
     notify-send -u low -a $appname -r $replaceid -t 0 "Adding to card..."
 
@@ -155,20 +160,27 @@ if pgrep pw-record; then
     fi
 
     rm $mp3_file
+elif [ "$(pgrep -of "$0")" != "$$" ]; then
+    echo "Recording countdown in progress..."
+    exit 1
 else
     if [ $wait_sec -gt 0 ]; then
+        msg="Recording in $wait_sec seconds..."
+
         if [ $wait_sec -eq 1 ]; then
-            notify-send -u low -a $appname -r $replaceid -t 0 "Recording in a second..."
-        else
-            notify-send -u low -a $appname -r $replaceid -t 0 "Recording in $wait_sec seconds..."
+            msg="Recording in a second..."
         fi
+
+        echo "$msg"
+        notify-send -u low -a $appname -r $replaceid -t 0 "$msg"
 
         sleep $wait_sec
     fi
 
     pw-record -P '{ stream.capture.sink=true }' $rec_file &
 
-    resp=$(notify-send -u low -a $appname -r $replaceid  -t 0 -A Abort -A Stop "Recording audio...")
+    echo "Recording audio..."
+    resp=$(notify-send -u low -a $appname -r $replaceid -t 0 -A Abort -A Stop "Recording audio...")
 
     case "$resp" in
         '0')

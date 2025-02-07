@@ -22,7 +22,7 @@ By default also normalizes audio to -16LUFS, so you don't get jumpscared while d
 ### Usage
 
 Run the script to start recording, run it again to stop, kill the process to abort.
-Optionally pass `-c` to copy the anki media string (`[sound:xyz.mp3]`) to the clipboard instead of adding it to the latest card, and `-p` to play back the recorded audio.
+Optionally pass `-c` to copy the anki media string (`[sound:xyz.mp3]`) to the clipboard instead of adding it to the latest card, `-p` to play back the recorded audio, and `-n` to start recording immediately.
 
 Configuration is done within the shell script itself, make sure to do this before running it!
 
