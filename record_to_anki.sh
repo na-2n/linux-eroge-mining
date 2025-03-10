@@ -54,7 +54,7 @@ _copy_mp3() {
     fi
 
     if [ $1 -eq 1 ]; then
-        notify-send -u low -a $appname -r $replaceid "Added to card!"
+        notify-send -u normal -a $appname -r $replaceid "Added to card!"
     fi
 
     if [ $playback_audio -eq 1 ]; then
@@ -81,7 +81,7 @@ if pgrep pw-record >/dev/null; then
     # kills the old process' notify-send so it closes the notification and stops the process
     pkill --signal SIGINT -f "notify-send.+$replaceid"
 
-    notify-send -u low -a $appname -r $replaceid -t 0 "Adding to card..."
+    notify-send -u normal -a $appname -r $replaceid -t 0 "Adding to card..."
 
     if [ $normalize -eq 1 ]; then
         if ! ffmpeg -y -i $rec_file -filter:a "silenceremove=1:0:-50dB" $norm_file; then
@@ -150,7 +150,7 @@ if pgrep pw-record >/dev/null; then
                 ;;
         esac
 
-        notify-send -u low -a $appname -r $replaceid "Copied to clipboard!"
+        notify-send -u normal -a $appname -r $replaceid "Copied to clipboard!"
     else
         if ! resp=$(ankiconnect '{"action":"findNotes","version":6,"params":{"query":"added:1"}}'); then
             notify-send -u critical -a $appname -r $replaceid "Adding to card failed!" "Failed to connect to anki, is it running?"
@@ -188,7 +188,7 @@ else
         fi
 
         echo "$msg"
-        notify-send -u low -a $appname -r $replaceid -t 0 "$msg"
+        notify-send -u normal -a $appname -r $replaceid -t 0 "$msg"
 
         sleep $wait_sec
     fi
@@ -196,7 +196,7 @@ else
     pw-record -P '{ stream.capture.sink=true }' $rec_file &
 
     echo "Recording audio..."
-    resp=$(notify-send -u low -a $appname -r $replaceid -t 0 -A Abort -A Stop "Recording audio...")
+    resp=$(notify-send -u normal -a $appname -r $replaceid -t 0 -A Abort -A Stop "Recording audio...")
 
     case "$resp" in
         '0')
